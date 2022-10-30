@@ -8,7 +8,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="flex flex-wrap items-center bg-blue-300 p-3 ">
-        <Link href="/games">
+        <Link href="/">
           <div className="mr-4 inline-flex items-center p-2 ">
             <span className="text-xl font-bold uppercase tracking-wide text-white">
               League Journal
@@ -35,6 +35,22 @@ const Navbar = () => {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="px-1 py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href="/account"
+                              className={`${
+                                active
+                                  ? "bg-blue-300 text-white"
+                                  : "text-blue-300"
+                              } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
+                            >
+                              Account
+                            </Link>
+                          )}
+                        </Menu.Item>
+                      </div>
                       <div className="px-1 py-1">
                         <Menu.Item>
                           {({ active }) => (
