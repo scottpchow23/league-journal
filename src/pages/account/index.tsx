@@ -33,10 +33,12 @@ const Page: NextPage = () => {
       <h1 className="text-5xl font-extrabold leading-normal text-gray-700 md:text-[5rem]">
         Account
       </h1>
-      <p>
-        This is the account that you&apos;ll be journaling matches for. Keep in
-        mind that changing accounts means you&apos;ll lose all journals
-        associated with the previous account.
+      <p className="text-center text-2xl text-gray-700">
+        This is where you configure the account that you&apos;ll be journaling
+        matches for.
+        <br /> Keep in mind that changing accounts means you&apos;ll lose{" "}
+        <strong>all</strong> games and journals associated with the previous
+        account.
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
         <div className="flex flex-row">
