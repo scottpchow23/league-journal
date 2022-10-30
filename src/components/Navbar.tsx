@@ -3,6 +3,34 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { Fragment } from "react";
 
+const NavLink = ({
+  label,
+  to,
+  onClick,
+}: {
+  label: string;
+  to: string;
+  onClick?: () => void;
+}) => {
+  return (
+    <div className="px-1 py-1">
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            href={to}
+            className={`${
+              active ? "bg-blue-300 text-white" : "text-blue-300"
+            } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
+            onClick={onClick}
+          >
+            {label}
+          </Link>
+        )}
+      </Menu.Item>
+    </div>
+  );
+};
+
 const Navbar = () => {
   const { data: sessionData } = useSession();
   return (
@@ -35,38 +63,13 @@ const Navbar = () => {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <div className="px-1 py-1">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <Link
-                              href="/account"
-                              className={`${
-                                active
-                                  ? "bg-blue-300 text-white"
-                                  : "text-blue-300"
-                              } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
-                            >
-                              Account
-                            </Link>
-                          )}
-                        </Menu.Item>
-                      </div>
-                      <div className="px-1 py-1">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              className={`${
-                                active
-                                  ? "bg-blue-300 text-white"
-                                  : "text-blue-300"
-                              } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
-                              onClick={() => signOut()}
-                            >
-                              Sign Out
-                            </button>
-                          )}
-                        </Menu.Item>
-                      </div>
+                      <NavLink label="Account" to="/account" />
+                      <NavLink label="Games" to="/games" />
+                      <NavLink
+                        label="Sign Out"
+                        to="/"
+                        onClick={() => signOut()}
+                      />
                     </Menu.Items>
                   </Transition>
                 </>
