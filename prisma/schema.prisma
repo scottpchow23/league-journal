@@ -67,12 +67,163 @@ model VerificationToken {
 }
 
 model Summoner {
-  id            String @id @default(cuid())
-  name          String
-  summonerLevel Int
-  profileIconId Int
-  accountId     String
-  puuid         String
-  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String @unique
+  id                  String                       @id @default(cuid())
+  name                String
+  summonerLevel       Int
+  profileIconId       Int
+  accountId           String
+  puuid               String
+  user                User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String                       @unique
+  matchParticipations SummonerMatchParticipation[]
+}
+
+model Match {
+  id                     String                       @id
+  summonerParticipations SummonerMatchParticipation[]
+  participants           Participant[]
+  dataVersion            String
+  gameCreation           BigInt
+  gameDuration           BigInt
+  gameEndTimestamp       BigInt
+  gameId                 BigInt
+  gameMode               String
+  gameName               String
+  gameStartTimestamp     BigInt
+  gameType               String
+  gameVersion            String
+  mapId                  Int
+  platformId             String
+  queueId                Int
+  tournamentCode         String
+}
+
+model SummonerMatchParticipation {
+  id            String      @id @default(cuid())
+  match         Match       @relation(fields: [matchId], references: [id])
+  matchId       String
+  summoner      Summoner    @relation(fields: [summonerId], references: [id])
+  summonerId    String
+  participation Participant @relation(fields: [participantId], references: [id])
+  participantId String
+
+  @@unique([summonerId, matchId])
+  @@unique([participantId, matchId])
+}
+
+model Participant {
+  id                             String                       @id @default(cuid())
+  SummonerMatchParticipation     SummonerMatchParticipation[]
+  match                          Match                        @relation(fields: [matchId], references: [id])
+  matchId                        String
+  assists                        Int
+  baronKills                     Int
+  basicPings                     Int
+  bountyLevel                    Int
+  // challenges: Challenges;
+  champExperience                Int
+  champLevel                     Int
+  championId                     Int
+  championName                   String
+  championTransform              Int
+  consumablesPurchased           Int
+  damageDealtToBuildings         Int
+  damageDealtToObjectives        Int
+  damageDealtToTurrets           Int
+  damageSelfMitigated            Int
+  deaths                         Int
+  detectorWardsPlaced            Int
+  doubleKills                    Int
+  dragonKills                    Int
+  eligibleForProgression         Boolean
+  firstBloodAssist               Boolean
+  firstBloodKill                 Boolean
+  firstTowerAssist               Boolean
+  firstTowerKill                 Boolean
+  gameEndedInEarlySurrender      Boolean
+  gameEndedInSurrender           Boolean
+  goldEarned                     Int
+  goldSpent                      Int
+  individualPosition             String
+  inhibitorKills                 Int
+  inhibitorTakedowns             Int
+  inhibitorsLost                 Int
+  item0                          Int
+  item1                          Int
+  item2                          Int
+  item3                          Int
+  item4                          Int
+  item5                          Int
+  item6                          Int
+  itemsPurchased                 Int
+  killingSprees                  Int
+  kills                          Int
+  lane                           String
+  largestCriticalStrike          Int
+  largestKillingSpree            Int
+  largestMultiKill               Int
+  longestTimeSpentLiving         Int
+  magicDamageDealt               Int
+  magicDamageDealtToChampions    Int
+  magicDamageTaken               Int
+  neutralMinionsKilled           Int
+  nexusKills                     Int
+  nexusLost                      Int
+  nexusTakedowns                 Int
+  objectivesStolen               Int
+  objectivesStolenAssists        Int
+  // participantId               Int // I hate this
+  pentaKills                     Int
+  // perks: Perks;
+  physicalDamageDealt            Int
+  physicalDamageDealtToChampions Int
+  physicalDamageTaken            Int
+  profileIcon                    Int
+  puuid                          String
+  quadraKills                    Int
+  riotIdName                     String
+  riotIdTagline                  String
+  role                           String
+  sightWardsBoughtInGame         Int
+  spell1Casts                    Int
+  spell2Casts                    Int
+  spell3Casts                    Int
+  spell4Casts                    Int
+  summoner1Casts                 Int
+  summoner1Id                    Int
+  summoner2Casts                 Int
+  summoner2Id                    Int
+  summonerId                     String
+  summonerLevel                  Int
+  summonerName                   String
+  teamEarlySurrendered           Boolean
+  teamId                         Int
+  teamPosition                   String
+  timeCCingOthers                Int
+  timePlayed                     BigInt
+  totalDamageDealt               Int
+  totalDamageDealtToChampions    Int
+  totalDamageShieldedOnTeammates Int
+  totalDamageTaken               Int
+  totalHeal                      Int
+  totalHealsOnTeammates          Int
+  totalMinionsKilled             Int
+  totalTimeCCDealt               Int
+  totalTimeSpentDead             Int
+  totalUnitsHealed               Int
+  tripleKills                    Int
+  trueDamageDealt                Int
+  trueDamageDealtToChampions     Int
+  trueDamageTaken                Int
+  turretKills                    Int
+  turretTakedowns                Int
+  turretsLost                    Int
+  unrealKills                    Int
+  visionScore                    Int
+  visionWardsBoughtInGame        Int
+  wardsKilled                    Int
+  wardsPlaced                    Int
+  win                            Boolean
+
+  @@unique([matchId, puuid])
 }

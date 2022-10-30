@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../trpc";
-import type { Match } from "./types/matches";
+import type { Match as RiotMatch } from "./types/matches";
 
 type MatchesResponse = string[];
 
@@ -26,17 +26,85 @@ export const gamesRouter = router({
       throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
     }
     const matchIds = (await matchesResponse.json()) as MatchesResponse;
-    const matches = await Promise.all(
-      matchIds.map(async (matchId) => {
+    const existingMatches = await req.ctx.prisma.match.findMany({
+      where: {
+        id: {
+          in: matchIds,
+        },
+      },
+      include: {
+        participants: true,
+      },
+    });
+    const newMatchIds = matchIds.filter((id) =>
+      existingMatches.every((match) => match.id !== id)
+    );
+    const newRiotMatches = await Promise.all(
+      newMatchIds.map(async (matchId) => {
         const res = await fetch(
           matchBaseUrl + `/${matchId}?api_key=${process.env.RIOT_API_KEY}`
         );
         if (res.status !== 200) {
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         }
-        return (await res.json()) as Match;
+        return (await res.json()) as RiotMatch;
       })
     );
-    return matches;
+    const newMatches = await Promise.all(
+      newRiotMatches.map(async (riotMatch) => {
+        const matchId = riotMatch.metadata.matchId;
+        const matchData = {
+          id: matchId,
+          dataVersion: riotMatch.metadata.dataVersion,
+          ...riotMatch.info,
+          participants: undefined,
+          teams: undefined,
+        };
+        const participantsData = (riotMatch.info.participants || []).map(
+          (participant) => ({
+            ...participant,
+            matchId,
+            participantId: undefined,
+            perks: undefined,
+            challenges: undefined,
+          })
+        );
+        await req.ctx.prisma.match.upsert({
+          where: {
+            id: matchId,
+          },
+          update: {},
+          create: matchData,
+        });
+        await Promise.all(
+          participantsData.map(
+            async (participantDatum) =>
+              await req.ctx.prisma.participant.upsert({
+                where: {
+                  matchId_puuid: {
+                    matchId,
+                    puuid: participantDatum.puuid,
+                  },
+                },
+                update: {},
+                create: participantDatum,
+              })
+          )
+        );
+
+        const match = await req.ctx.prisma.match.findUnique({
+          where: {
+            id: matchId,
+          },
+          include: {
+            participants: true,
+          },
+        });
+
+        return match;
+      })
+    );
+
+    return [...newMatches, ...existingMatches];
   }),
 });

@@ -11,7 +11,20 @@ const Page: NextPage = () => {
         Games
       </h1>
       {games.data ? (
-        <DynamicReactJson src={games.data} />
+        <DynamicReactJson
+          src={(games.data || []).map((game) => ({
+            ...game,
+            gameCreation: undefined,
+            gameDuration: undefined,
+            gameEndTimestamp: undefined,
+            gameStartTimestamp: undefined,
+            gameId: undefined,
+            participants: (game?.participants || []).map((participant) => ({
+              ...participant,
+              timePlayed: undefined,
+            })),
+          }))}
+        />
       ) : (
         <div>Loading...</div>
       )}
