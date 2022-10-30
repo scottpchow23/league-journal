@@ -58,6 +58,14 @@ model User {
   Summoner      Summoner[]
 }
 
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model Summoner {
   id            String @id @default(cuid())
   name          String
@@ -67,12 +75,4 @@ model Summoner {
   puuid         String
   user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String @unique
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
 }
