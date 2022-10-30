@@ -79,15 +79,16 @@ export const gamesRouter = router({
         await Promise.all(
           participantsData.map(
             async (participantDatum) =>
-              await req.ctx.prisma.participant.upsert({
-                where: {
-                  matchId_puuid: {
-                    matchId,
-                    puuid: participantDatum.puuid,
-                  },
-                },
-                update: {},
-                create: participantDatum,
+              await req.ctx.prisma.participant.create({
+                // where: {
+                //   matchId_puuid: {
+                //     matchId,
+                //     puuid: participantDatum.puuid,
+                //   },
+                // },
+                // update: {},
+                // create: participantDatum,
+                data: participantDatum,
               })
           )
         );
