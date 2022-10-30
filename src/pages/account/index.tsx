@@ -34,10 +34,8 @@ const Page: NextPage = () => {
         <button>Save</button>
       </form>
       <div className="flex w-full items-center justify-center pt-6 text-2xl text-blue-500">
-        {getAccount.data && window ? (
+        {getAccount.data && window && (
           <DynamicReactJson src={getAccount.data || {}} />
-        ) : (
-          <p>Loading..</p>
         )}
       </div>
     </>
